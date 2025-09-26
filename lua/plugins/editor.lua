@@ -82,10 +82,41 @@ return {
     "max397574/better-escape.nvim",
     config = function()
       require("better_escape").setup({
-        mapping = { "jk", "jj" },
+        default_mappings = true,
+        mappings = {
+          i = {
+            j = {
+              k = "<Esc>",
+              j = "<Esc>",
+            },
+          },
+          c = {
+            j = {
+              k = "<Esc>",
+              j = "<Esc>",
+            },
+          },
+          t = {
+            j = {
+              k = "<C-\\><C-n>",
+              j = "<C-\\><C-n>",
+            },
+          },
+          v = {
+            j = {
+              k = "<Esc>",
+              j = "<Esc>",
+            },
+          },
+          s = {
+            j = {
+              k = "<Esc>",
+              j = "<Esc>",
+            },
+          },
+        },
         timeout = vim.o.timeoutlen,
         clear_empty_lines = false,
-        keys = "<Esc>",
       })
     end,
   },

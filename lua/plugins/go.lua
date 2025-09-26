@@ -16,7 +16,7 @@ return {
         textobjects = false,
         -- auto commands
         auto_format = true,
-        auto_lint = true,
+        auto_lint = false,
         -- lsp
         lsp_cfg = false, -- we handle LSP config in lsp.lua
         -- formatting

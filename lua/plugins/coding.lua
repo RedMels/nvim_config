@@ -93,26 +93,69 @@ return {
     config = function()
       local lint = require("lint")
 
-      lint.linters_by_ft = {
-        go = { "golangci-lint" },
-        javascript = { "eslint_d" },
-        typescript = { "eslint_d" },
-        javascriptreact = { "eslint_d" },
-        typescriptreact = { "eslint_d" },
-      }
+      -- Helper function to check if a command exists
+      local function command_exists(cmd)
+        return vim.fn.executable(cmd) == 1
+      end
 
-      local lint_augroup = vim.api.nvim_create_augroup("lint", { clear = true })
+      -- Configure linters only if they're available
+      local available_linters = {}
+      
+      -- Go linters
+      if command_exists("golangci-lint") then
+        available_linters.go = { "golangcilint" }
+      elseif command_exists("staticcheck") then
+        available_linters.go = { "staticcheck" }
+      end
+      
+      -- JavaScript/TypeScript linters
+      local js_linters = {}
+      if command_exists("eslint_d") then
+        table.insert(js_linters, "eslint_d")
+      elseif command_exists("eslint") then
+        table.insert(js_linters, "eslint")
+      end
+      
+      if #js_linters > 0 then
+        available_linters.javascript = js_linters
+        available_linters.typescript = js_linters
+        available_linters.javascriptreact = js_linters
+        available_linters.typescriptreact = js_linters
+      end
 
-      vim.api.nvim_create_autocmd({ "BufEnter", "BufWritePost", "InsertLeave" }, {
-        group = lint_augroup,
-        callback = function()
-          lint.try_lint()
-        end,
-      })
+      lint.linters_by_ft = available_linters
 
-      vim.keymap.set("n", "<leader>l", function()
-        lint.try_lint()
-      end, { desc = "Trigger linting for current file" })
+      -- Only create autocmds if we have linters
+      local has_linters = false
+      for _, linters in pairs(available_linters) do
+        if #linters > 0 then
+          has_linters = true
+          break
+        end
+      end
+
+      if has_linters then
+        local lint_augroup = vim.api.nvim_create_augroup("lint", { clear = true })
+
+        vim.api.nvim_create_autocmd({ "BufEnter", "BufWritePost", "InsertLeave" }, {
+          group = lint_augroup,
+          callback = function()
+            local ft = vim.bo.filetype
+            if available_linters[ft] and #available_linters[ft] > 0 then
+              lint.try_lint()
+            end
+          end,
+        })
+
+        vim.keymap.set("n", "<leader>l", function()
+          local ft = vim.bo.filetype
+          if available_linters[ft] and #available_linters[ft] > 0 then
+            lint.try_lint()
+          else
+            vim.notify("No linters available for filetype: " .. ft, vim.log.levels.INFO)
+          end
+        end, { desc = "Trigger linting for current file" })
+      end
     end,
   },
 }

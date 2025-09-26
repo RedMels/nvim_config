@@ -27,7 +27,7 @@ return {
       mason_lspconfig.setup({
         ensure_installed = {
           "gopls",        -- Go language server
-          "tsserver",     -- TypeScript/JavaScript
+          "ts_ls",        -- TypeScript/JavaScript (updated from tsserver)
           "html",         -- HTML
           "cssls",        -- CSS
           "emmet_ls",     -- Emmet for HTML/CSS
@@ -58,7 +58,6 @@ return {
       { "antosha417/nvim-lsp-file-operations", config = true },
     },
     config = function()
-      local lspconfig = require("lspconfig")
       local cmp_nvim_lsp = require("cmp_nvim_lsp")
 
       local keymap = vim.keymap
@@ -119,7 +118,10 @@ return {
       end
 
       -- configure Go server
-      lspconfig["gopls"].setup({
+      vim.lsp.config.gopls = {
+        cmd = { "gopls" },
+        filetypes = { "go", "gomod", "gowork", "gotmpl" },
+        root_markers = { "go.work", "go.mod", ".git" },
         capabilities = capabilities,
         on_attach = on_attach,
         settings = {
@@ -145,7 +147,6 @@ return {
               rangeVariableTypes = true,
             },
             analyses = {
-              fieldalignment = true,
               nilness = true,
               unusedparams = true,
               unusedwrite = true,
@@ -158,35 +159,54 @@ return {
             semanticTokens = true,
           },
         },
-      })
+      }
 
       -- configure html server
-      lspconfig["html"].setup({
+      vim.lsp.config.html = {
+        cmd = { "vscode-html-language-server", "--stdio" },
+        filetypes = { "html" },
+        root_markers = { "package.json", ".git" },
+        single_file_support = true,
         capabilities = capabilities,
         on_attach = on_attach,
-      })
+      }
 
       -- configure typescript server
-      lspconfig["tsserver"].setup({
+      vim.lsp.config.ts_ls = {
+        cmd = { "typescript-language-server", "--stdio" },
+        filetypes = { "javascript", "javascriptreact", "javascript.jsx", "typescript", "typescriptreact", "typescript.tsx" },
+        root_markers = { "tsconfig.json", "package.json", "jsconfig.json", ".git" },
+        single_file_support = true,
         capabilities = capabilities,
         on_attach = on_attach,
-      })
+      }
 
       -- configure css server
-      lspconfig["cssls"].setup({
+      vim.lsp.config.cssls = {
+        cmd = { "vscode-css-language-server", "--stdio" },
+        filetypes = { "css", "scss", "less" },
+        root_markers = { "package.json", ".git" },
+        single_file_support = true,
         capabilities = capabilities,
         on_attach = on_attach,
-      })
+      }
 
       -- configure emmet language server
-      lspconfig["emmet_ls"].setup({
+      vim.lsp.config.emmet_ls = {
+        cmd = { "emmet-ls", "--stdio" },
+        filetypes = { "html", "css", "javascript", "javascriptreact" },
+        root_markers = { "package.json", ".git" },
+        single_file_support = true,
         capabilities = capabilities,
         on_attach = on_attach,
-        filetypes = { "html", "css", "javascript", "javascriptreact" },
-      })
+      }
 
       -- configure lua server (with special settings)
-      lspconfig["lua_ls"].setup({
+      vim.lsp.config.lua_ls = {
+        cmd = { "lua-language-server" },
+        filetypes = { "lua" },
+        root_markers = { ".luarc.json", ".luarc.jsonc", ".luacheckrc", ".stylua.toml", "stylua.toml", "selene.toml", "selene.yml", ".git" },
+        single_file_support = true,
         capabilities = capabilities,
         on_attach = on_attach,
         settings = { -- custom settings for lua
@@ -204,7 +224,7 @@ return {
             },
           },
         },
-      })
+      }
     end,
   },
 }
