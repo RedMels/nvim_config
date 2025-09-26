@@ -2,12 +2,12 @@
 -- ~/.config/nvim/lua/config/colorscheme.lua
 
 -- Set colorscheme with fallback
-local colorscheme = "default"
+local colorscheme = "gruvbox"
 
 local status_ok, _ = pcall(vim.cmd.colorscheme, colorscheme)
 if not status_ok then
-  vim.notify("colorscheme " .. colorscheme .. " not found!")
-  return
+  vim.notify("colorscheme " .. colorscheme .. " not found! Falling back to default.")
+  vim.cmd.colorscheme("default")
 end
 
 -- Optional: Additional colorscheme-specific configurations

@@ -25,7 +25,7 @@ function M.get_root()
   local path = vim.api.nvim_buf_get_name(0)
   
   if path == "" then
-    return vim.loop.cwd()
+    return vim.uv.cwd()
   end
   
   path = vim.fs.dirname(path)
@@ -35,7 +35,7 @@ function M.get_root()
     return vim.fs.dirname(root)
   end
   
-  return vim.loop.cwd()
+  return vim.uv.cwd()
 end
 
 -- Toggle between light and dark theme
